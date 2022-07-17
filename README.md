@@ -1,4 +1,4 @@
-# kafein staj - learning java
+# Kafein Staj - learning java
 
 | Gün  | Konu |
 | ------------- | ------------- |
