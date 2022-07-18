@@ -1045,3 +1045,63 @@ try{
   
 ## 📔 Java 14. Gün
 ### Java’da dosyalar ile çalışmak
+Java.io paketinin File sınıfı, dosyalar ve dizinler üzerinde çeşitli işlemler gerçekleştirmek için kullanılır. Bir File nesnesi oluşturmak için, önce java.io.File paketini içe aktarmamız gerekir. Yeni bir File nesnesi oluştururken constructor metodunun içine dosya adını veya dosyanın konumunu gireriz. File sınıfı createNewFile(), delete(), getName(), canRead(), length() gibi metotlara sahiptir. Yeni bir dosya oluşturmak için createNewFile() metodunu kullanabiliriz. Eğer yeni bir dosya oluşturulursa metot true, dosya zaten belirtilen konumda mevcutsa false değerini döndürür. Belirtilen dosyayı veya dizini silmek için File sınıfının delete() metodunu kullanabiliriz. Ancak, sadece boş dizinleri silebiliriz. Java File sınıfı, yeni bir dizin oluşturmak için mkdir() metodunu sağlar. Metot geriye yeni dizin oluşturulursa true, dizin zaten mevcutsa false değerini döndürür. list() metodu ise belirtilen dizindeki dosya ve dizin adlarını bir string array içerisinde döndürür.
+
+Dosyaları okumak için BufferedReader veya daha önce input alırken kullandığım Scanner gibi sınıfları kullanabiliyoruz. Scanner metoduyla dosya okumak için bir Scanner nesnesi oluştururken constructor metodunun içerisine “file” yazılır. Ardından nextLine() metodu ile bulunulan satır okunur. hasNext() metodu ise bulunulan satırdan sonra başka bir satır bulunuyorsa true değeri döndürür. Böylece loop kullanarak tüm dosyayı okumamız mümkün olur.
+
+Dosyalara yazmak için BufferedWriter, FileWriter gibi sınıfları kullanabiliyoruz. Bu sınıflardan nesne oluştururken constructor metodunun içerisine ilk parametre olarak yazılacak dosya için oluşturulmuş olan File nesnesi yazılır. Ardından yazıma dosyanın sonundan, mevcut verileri etkilemeyecek şekilde başlanmak isteniyorsa ikinci parametreye true değeri yazılır. Bu değer append değerine karşılık gelir. Ayrıca BufferedReader sınıfından bir nesne oluştururken constructor metodunun içerisine FileReader sınıfından bir nesneyi de direkt geçirebiliyoruz
+
+Ek olarak, kullanılan bu nesneleri verimlilik için programın sonunda close() metotları ile kapatmamız gerekir.
+
+Aşağıdaki örnekte FileManager adlı bir sınıf oluşturdum ve içerisinde createFile(), getFileInfo(), readFile(), writeFile() metotları oluşturdum.
+```java
+public class FileManager {
+
+    public File createFile(String filePath){
+        File file = new File(filePath);
+        try {
+            if(file.createNewFile()){
+                System.out.println("File created.");
+            }
+            else{
+                System.out.println("File already exists.");
+            }
+        } catch (IOException exception){
+            throw new RuntimeException(exception);
+        }
+        return file;
+    }
+
+    public void getFileInfo(File file){
+        System.out.println("File name: " + file.getName());
+        System.out.println("File path: " + file.getAbsolutePath());
+        System.out.println("Is it readable: " + file.canRead());
+        System.out.println("Is it writable: " + file.canWrite());
+        System.out.println("File size (byte): " + file.length());
+    }
+
+    public void readFile(File file){
+        try {
+            Scanner reader = new Scanner(file);
+            while(reader.hasNext()){
+                String line = reader.nextLine();
+                System.out.println(line);
+            }
+            reader.close();
+        } catch (FileNotFoundException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public void writeFile(File file, String stringToWrite){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            writer.write(stringToWrite);
+            writer.newLine();
+            writer.close();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+}
+```
