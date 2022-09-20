@@ -16,6 +16,14 @@
 | 12 | MySQL kurulumu, temel SQL sorguları ve Java’da JDBC ile database (veri tabanı) bağlantısı  |
 | 13 | Java’da JDBC ile veri tabanı işlemleri (SELECT, INSERT, UPDATE, DELETE) ve verileri nesnelere aktarma   |
 | 14 | Java’da dosyalar ile çalışmak  |
+| 15 | İleri Seviye Java - Spring Framework’e giriş  |
+| 16 | İleri Seviye Java - Hibernate  |
+| 17 | İleri seviye Java - Maven  |
+| 18 | İleri Seviye Java - Spring Boot  |
+| 19 | Katmanlı mimariler, application.properties dosyası, JPA ve örnek bir proje  |
+| 20 | Staj projesi – MySQL’de proje için veri tabanı oluşturma, Java’da veri tabanı nesnesi için sınıf oluşturma  |
+| 21 | Staj projesi – Projenin Data Access katmanının yazılması, application.properties dosyasının konfigürasyonu  |
+| 22 | Staj Projesi – Projenin Service katmanı ve REST Api’ının yazılması  |
              
 ## 📔 Java 1. Gün
 ### IDE seçimi ve Java’ya başlangıç
@@ -1102,6 +1110,401 @@ public class FileManager {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+    }
+}
+```
+
+## 📔 Java 15. Gün
+### İleri Seviye Java - Spring Framework’e giriş
+Spring, Java için geliştirilmiş açık kaynak kodlu bir framework’tür. Java uygulamalarını geliştirmeyi kolaylaştırır. Spring birçok modülü ve üçüncü parti kütüphaneleri kullanıma sunarak onlarla sıkıntısız bir şekilde entegrasyon işlemi sağlar. Spring, Core Container, AOP, Data Access, Web gibi modüllerden oluşur.
+
+1) Core Container
+Spring Core Container dört modülden oluşur: Core, Beans, Context ve Expression Language. Spring Core, Spring frameworkünün uygulamalara entegre edilecek temel mekanizmaları içeren parçasıdır. Core Container içerisindeki Core ve Beans modülleri Spring Framework’unun en temel özelliği olan Inversion of Control (IoC) ve Dependency Injection (DI) ‘ı sağlamaktadır. 
+
+IoC, kontrolün uygulamadan alınarak framework’e(Spring) aktarılmasıdır. IoC ile Java nesnelerinin oluşturulması, yaşam süreleri, nesneler arası bağımlılıklar ve tüm bunların yönetimi yazılım geliştiriciden alınıp Spring’e verilmiş olur.
+
+DI, bağımlılıkları ortadan kaldırmak şeklinde ifade edilir. Yazılım geliştiricilerin uygulamalarında ihtiyaç duyduğu nesneleri(beans), diğer nesneler ile ilişkilendirirken, ilişki kurma işini yazılım geliştiricinin üzerinden almasıdır.
+
+Varsayılan olarak Spring, uygulamanızda tanımladığınız nesnelerin hiçbirini bilmez. Spring'in nesnelerinizi görmesini sağlamak için onları context içine eklememiz gerekir. Spring Context'in içine eklenen objeler, context tarafından yönetilir, configure edilir ve gerektiğinde çağrılır. Bu şekilde, framework’ün sunduğu özellikleri kullanmamıza izin verir.
+
+Spring, farklı gereksinimlere uygun farklı ApplicationContext implementasyonları sunar. Tüm bu implementasyonlar, ApplicationContext interfece'inden türemektedir. Bazı yaygın ApplicationContext türleri:
+
+•	AnnotationConfigApplicationContext
+•	AnnotationConfigWebApplicationContext
+•	XmlWebApplicationContext
+•	FileSystemXMLApplicationContext
+•	ClassPathXmlApplicationContext
+
+2) AOP (Aspect Oriented Programming)
+Spring AOP modülü, kodu temiz bir şekilde ayırabilmek için Java dilinde implemente edilmiş Proxy tabanlı bir çatıdır. AOP ile transaction yöntemi sayesinde log ve güvenlik gibi modüller merkezi bir yerde toplanır ve lazım olduğunda projeden bağımsız olarak çağrılabilir.
+
+3-) Data Access
+Bu katmanda JDBC, ORM, OXM, JMS ve Transaction modülleri bulunur. Bu modüller database ile etkileşim kurmayı sağlar.
+
+4) Web
+Bu katmanda Web, Web-Servlet ve Web-Portlet modülleri bulunur. Bu modüller web uygulaması oluşturmayı sağlar.
+
+5) Test
+Bu katman JUnit ve TestNG modülleri ile test işlemini sağlar.
+
+Spring framework’te Core Container modülü haricindeki modülleri kullanmak isteğe bağlıdır. Hiç kullanılmayabilir ya da arzu edilen ve benzer fonksiyonu yerine getiren diğer teknolojiler kullanılabilir.
+
+Spring framework ve modülleri hakkında genel bilgiler edindikten sonra Spring’i yönetmeye yarayan ApplicationContext’ler hakkında daha detaylı bilgiler edinmeye başladım.
+
+AnnotationConfigApplicationContext class’ı Spring 3.0 ile birlikte ekosisteme dahil oldu. Güncel olarak en yaygın kullanılan Application Context oluşturma metodu budur.
+Input olarak @Configuration veya @Component ile annotate edilmiş sınıfları alır.
+
+Bean, Spring context içine eklediğimiz object instance'larının her birine verilen isimdir. Kısaca, context içinde yer alan her bir nesne bean olarak adlandırılır. Spring context'e bean eklemenin birden fazla yolu vardır. Bu yöntemleri şu şekilde sıralayabiliriz:
+
+•	XML konfigürasyonu kullanarak
+•	@Bean anotasyonunu kullanarak
+•	Stereotype (@Component, @Repository, @Service and @Controller) anotasyonlarını kullanarak
+
+@Bean anotasyonunu kullanarak Spring context'e bir bean eklemek için, projeye Spring context'i yapılandırmak için kullanacağımız ve @Configuration anotasyonu ile işaretlenmiş bir yapılandırma sınıfı tanımlanır. Ardından Context'e eklemek istediğimiz nesneyi döndüren metot yapılandırma sınıfına eklenir ve @Bean anotasyonuyla bu metot işaretlenir.
+
+Stereotype (@Component, @Repository, @Service and @Controller) anotasyonlarını kullanarak da bean'lerimizi context'e ekleyebiliriz. Önce @Component anotasyonunu kullanarak, Spring'in kendi context'ine bir instance eklemesini istediğimiz sınıflar işaretlenir. Ardından oluşturduğumuz konfigürasyon sınıfı üzerinde @ComponentScan anotasyonu kullanılarak, Spring'e işaretlediğimiz sınıfları nerede bulacağı konusunda bilgi verilir.
+
+Ayrıca bir properties dosyasındaki değerleri uygulamamıza aktarmak istersek @Value anotasyonunu kullanabiliyoruz. Bunun için önce konfigürasyon sınıfında @PropertySource anotasyonu kullanılarak dosyanın konumu belirtilir. Sonrasında, örneğin dosyadaki user.name değerini bir değişkene aktarmak istiyorsak @Value(“${user.name}”) anotasyonunu kullanırız.
+
+Ardından öğrendiklerimi uyguladığım örnekler yaptım.
+
+## 📔 Java 16. Gün
+### İleri Seviye Java - Hibernate
+Hibernate, veri tabanındaki tablolarla Java’daki class’larımızı eşleştirip, class’lar üzerinden veri tabanındaki nesneleri map ederek (birbirleriyle ilişkilendirerek) verilere hızlı bir şekilde insert, update, delete ve select operasyonları uygulayabilmemizi sağlar. Hibernate sayesinde JDBC’ye kıyasla daha az kod ile daha hızlı şekilde veri tabanı bağlantısı ve operasyonları yapılabilmektedir. Hibernate’nin hangi veritabanına nasıl işleneceğini XML dosyasında belirtilir. Hibernate genel anlamda Java veri tiplerinden SQL veri tiplerine dönüşümü gerçekleştirir ve ayrıca veri sorgulama ve veri çekme işlemlerini de kullanıcı için sağlar.
+
+Java sınıflarını veri tabanı nesnesi olarak kullanmak için @Entity anotasyonunu kullanırız. @Table anotasyonu ile de sınıfın hangi tablonun nesnesi olarak kullanılacağını belirtiriz. Ardından sınıfın niteliklerini, tablonun sütunları ile eşleştirmek için @Column anotasyonunu kullanırız. 
+
+Hibernate ile veri tabanı işlemleri yapılırken SessionFactory ve Session sınıfları kullanılır. SessionFactory sınıfından oluşturacağımız nesne bizim konfigürasyon dosyamızı okur ve Session objeleri oluşturmaya yarar. Ancak SessionFactory ağır bir sınıf olduğu için uygulama çalışırken yalnızca bir tane instance oluşturulur. Daha sonra tüm Session objeleri bu instancedan oluşur. Session sınıfı ise JDBC bağlantısından sorumludur, objeleri okumak ve yazmak için temel sınıftır. SessionFactory sınıfı tarafından oluşturulur. Kısa süreli yaşam döngüsü vardır. Gereken işlem yapıldıktan sonra session’ı kapatırız. 
+
+SessionFactory nesnesi oluşturulurken bir Configuration sınıfı new’lenir ve ardından configure() metodu ile konfigürasyon dosyası, addAnnotedClass() metodu ile veri tabanı objesi olarak kullanılacak class belirtilir. Sonrasında ise buildSessionFactory() metodu ile SessionFactory nesnesi oluşturulur.
+
+SessionFactory nesnesinin getCurrentSession() metodu ile Session nesnesi oluşturulur. Ardından bu nesne ile veri tabanı operasyonları gerçekleştirilir.
+
+Edindiğim bilgilerin ardından Hibernate kullanarak veri tabanı işlemleri yapmaya başladım. Veri tabanı olarak daha önce de kullandığım world veri tabanının city tablosunu kullandım. Önce Hibernate kütüphanesini ve MySQL driver’ını projeye ekledim. Ardından City sınıfı oluşturdum ve bu sınıfı gerekli anotasyonları kullanarak veri tabanı nesnesi olarak kullandım. Sonrasında, Hibernate konfigürasyonu için bir XML dosyası oluşturup konfigüreasyonları yaptım. Ardından main metodu içerisinde SessionFactory ve Session nesneleri oluşturarak select, insert, update, delete işlemleri yaptım ve sorunsuz çalıştıklarını MySQL üzerinden doğruladım.
+
+## 📔 Java 17. Gün
+### İleri Seviye Java - Maven
+Maven, proje geliştirirken proje içerisinde bir standart oluşturmamızı, geliştirme sürecini basitleştirmemizi, dokümantasyonumuzu etkili bir şekilde oluşturmamızı, projemizdeki kütüphane bağımlılığını (dependency) kolayca yönetmemizi sağlayan bir proje kontrol aracıdır.
+
+Örneğin normalde el ile ekleyip yönetmemiz gereken Hibernate vb. paketleri Maven aracılığıyla projemize ekleyip yönetebiliyoruz. Maven, kütüphane dosyalarını kendi repository sunucularında barındırır. Projede kullanmak istediğimiz kütüphane dosyalarını ilk olarak bizim local repository klasörümüzde arar, eğer bulamazsa kendi sunucularında arama yapar, kütüphaneyi bizim local klasörümüze indirir ve projeniz içerisinde kullanabilmenizi sağlar. Ayrıca bir kütüphane başka kütüphanelere bağımlıysa bu bağımlı olduğu kütüphaneleri de indirir ve projemize ekler.
+
+Maven Repository içerisinde bulunan kütüphanelere veya jar’lara ulaşmak için çeşitli adresler vardır. En çok kullanılanlardan biri https://mvnrepository.com/ sitesidir. Bu site aracılığıyla aradığımız paketi kolayca bulup Maven ile projemize ekleyebiliriz.
+
+Maven’ın bize sağladığı bir diğer özellik de versiyon kontrolüdür. Maven ile projemizde yer alan kütüphanelerin yeni bir sürümü mevcut olduğunda kolayca o sürüme geçiş yapabiliriz.
+
+Ayrıca, Maven bize hazır proje şablonları (archetype) sunar. Bu şablonlar bize standartlar sunar ve biz bu standartlar üzerinde projelerimizi geliştiririz.
+
+Maven’ı POM.xml dosyası ile kontrol ederiz. Project Object Model(POM) dosyası aslında, hem proje hakkında bilgileri hemde projenin konfigürasyonu hakkında, bağımlılıkları, kaynağı, kullanılan pluginler, projeyi derlemek için gerekli komutlar vb. bilgileri içeren bir XML dosyasıdır. POM dosyasının properties bölümünden projenin özelliklerini (Java sürümü vb.) dependency bölümünden ise projenin kütüphane bağımlılıklarını (Hibernate vb.) kontrol ederiz.
+
+Maven hakkında bilgi edindikten sonra, Maven’ın standart bir Java projesi oluşturmaya yarayan quickstart archetype’ını kullanarak kendi projemi oluşturdum. Ardından https://mvnrepository.com/ sitesini kullanarak Hibernate’i Maven ile projeye ekledim. POM dosyasının dependency bölümüne siteden kopyaladığım xml satırlarını yapıştırdım ve Maven belirtilen sürümü projeye ekledi. Kütüphaneleri dün yaptığım gibi elle eklemek yerine Maven kullanarak yüklemenin ve kontrol etmenin çok daha kullanışlı olduğunu deneyimledim. Ardından aynı şekilde MySQL connector driver’ını da elle eklemek yerine Maven ile ekledim. Ardından dün yazdığım Hibernate projesinin Main sınıfını App sınıfına aktardım ve City sınıfını da bu projeye ekledim. Dün oluşturduğum Hibernate konfigürasyon dosyasını da bu projeye ekledim. Projemi sorunsuz çalıştırabildim.
+
+## 📔 Java 18. Gün
+### İleri Seviye Java - Spring Boot
+Stajdaki 19. günüme Spring Boot hakkında bilgi edinerek başladım. Spring Boot, Spring framework ile geliştirilen, güçlü varsayılan/otomatik ayarları sayesinde kolay ve hızlı Spring tabanlı uygulama yapımı için geliştirilmiş bir Spring modüldür. Spring Boot, bize bir Maven projesini istediğimiz eklentilerle ve konfigürasyonlarla beraber sunuyor, bize sadece gerekli kodları yazmak kalıyor. Bize seçeceğimiz dependency’lere (bağımlılık) göre hazır bir proje taslağı sunuyor. Spring Boot’un en önemli özelliklerinden birisi içerisinde gömülü şekilde Tomcat gibi yayınlama ortamlarını barındırmasıdır. Yani bizim ayrıca Tomcat’a veya diğer sunucu işlemlerine ihtiyacımız kalmadan, bunları Spring Boot içerisinde çözebiliyoruz. Spring Boot’un sağladığı en büyük avantajlardan biri ise bizi herhangi bir XML konfigürasyonuyla uğraşmak zorunda bırakmamasıdır. Kısacası Spring Boot bizlere Spring Framework tarafından sunulan ve işimizi oldukça kolaylaştıran bir yapıdır.
+
+Spring Boot projesi oluştururken genelde Spring Initializr (https://start.spring.io/) kullanılır. Spring Initializr, proje oluştururken inşa aracını (Maven vb.), JVM dilini (Java, Kotlin vb.), Spring Boot sürümünü, Java sürümünü, Projede kullanılacak olan kütüphaneleri / bağımlılıkları dinamik olarak belirlemeyi sağlar. IntelliJ IDEA’da Spring Initializr bulunduğu için direkt olarak ide’nin içinden proje oluşturulabiliyor. (Editörler Spring Boot projesini üretirken Spring Initializr sayfasını (https://start.spring.io/) kullanır.)
+
+Spring Boot projesi oluştururken, Dependencies bölümü altında projenin şablonunu belirtiyoruz. Örneğin bir web projesi oluşturmak istediğimizde Spring Web paketini seçiyoruz. Burada arama yaparak ihtiyacımıza göre istediğimiz paketleri kullanabiliyoruz.
+
+Spring Boot hakkında bilgi edindikten sonra, Spring Boot ile bir Web uygulaması oluşturmak için REST Api hakkında bilgi edinmeye başladım. REST, client - server (istemci – sunucu) arasındaki haberleşmeyi sağlayan, HTTP protokolü üzerinden çalışan bir mimaridir. İstemci ve sunucu arasında XML/JSON verilerini taşıyarak uygulamanın haberleşmesini sağlar. REST mimarisini kullanan servislere ise RESTful servis (RESTful API) denir.
+ REST ile yazılmış bir servisle çalışmak için ihtiyacımız olan tek şey URL’dir. Bir URL’e istek attığımızda, URL bize JSON veya XML formatında bir cevap döndürür, dönen cevap parse edilir ve servis entegrasyonu tamamlanır. REST servisler; client ve server arasındaki ayrım sayesinde, REST protokolü, bir projenin farklı alanlarındaki geliştirmelerin bağımsız olarak gerçekleşmesini kolaylaştırır.
+
+Spring Boot ile Rest Api yazarken @RestController anotasyonunu kullanmamız gerekir. Yazdığımız servisler için çeşitli HTTP istek (request) tipleri mevcuttur (GET, POST, PUT vb.). 
+
+•	@GetMapping anotasyonu, GET isteği için kullanılır. İçine parametre olarak string tipinde url girilir.	
+•	@PostMapping anotasyonu, POST isteği için kullanılır. İçine parametre olarak string tipinde url girilir.
+
+Bu anotasyonlara parametre olarak “/” girilir ise, uygulama çalıştığında uygulama sunucumuzun ana sayfasında bu anotasyonla tanımladığımız metot çalışır.
+
+Eğer @GetMapping anotasyonunda url kısmına parametre yollamak istiyorsak { ve } sembollerinin arasına parametrenin adını yazarız. Ardından ilgili metoda @PathVariable anotasyonu ile bir parametre tanımlayarak bu iki değişkeni eşleştiririz. Ancak bu iki parametrenin adının aynı olması gerekir.
+
+Ayrıca, @RequestMapping anotasyonu sınıf üzerinde kullanıldığı zaman, o sınıfın belirtilen url ile ilgili tüm işleri yapması sağlanır. Api’lar genellikle standart olarak domain isminden sonra /api şeklinde url’lere sahip olurlar. REST Api olarak kullanacağımız sınıfa @RequestMapping(“/api”) anotasyonunu eklediğimizde, bu sınıf içinde tanımlanan request metotlarını kullanabilmek için url’lerinin başına /api yazmamız gerekir. Bu şekilde uygulamamız daha düzenli olur.
+
+Ek olarak, Spring Boot ile uygulama geliştirirken her değişiklikte, değişikliğin çıktılara yansıması için kodun tekrar derlenmesi; yani bizim uygulamamızı tekrar çalıştırmamız gerekir. Zaman kazanmak adına burada Spring Boot Dev Tools devreye giriyor. Dev Tools dependency’sini (bağımlılık) projeye eklediğimizde, her kaydetme işleminde otomatik olarak kodu tekrar derliyor ve çıktılarımızı güncelliyor. Böylece uygulamayı tekrar başlatmamıza gerek kalmıyor.
+
+Öğrendiğim bilgiler sonrası ilk Spring Boot Web projemi oluşturdum ve örneklerle öğrendiklerimi uyguladım.
+
+## 📔 Java 19. Gün
+### İleri Seviye Java - Spring Boot
+Temel katmanlı mimariler Data Access(DAL), Business, Service ve User Interface(UI) katmanlarından oluşur. 
+
+En alt katmanımız Data Access(DAL, DAO) katmanıdır. Data Access katmanı bizim veri erişim katmanımızdır. Örneğin, temel JDBC, Hibernate vb. kodlarımızı bu katmanda yazarız. 
+
+Business katmanı, bizim iş katmanımızdır. İş kuralları buraya yazılır. Belirlenen algoritmalara göre verilerin şekillenmesini sağlayan logic dediğimiz işlemlerin yapıldığı katmandır. Örnek olarak veri tabanından belirli bir kurala göre verileri çekmek istiyorsak, o kuralı bu iş katmanı içerisinde uygulayarak istediğimiz veriyi elde etmiş oluruz.
+
+Service katmanı, RESTful servisler gibi servislerin kodlarının yazıldığı katmandır. Bazı geliştiriciler bu katmanı Business katmanıyla iç içe yazıyor olsa da ayrı olması daha sağlıklı olacaktır.
+
+User Interface(UI) katmanı, bizim kullanıcı arayüzü katmanımızdır. Uygulamamızın front-end kısmı arayüz katmanında bulunur. Bu katmanda kullanıcılara bir ara yüz sunulur ve kullanıcılar bu ara yüz ile beraber oluşturmuş olduğumuz proje ile etkileşime geçer.
+
+Bu katmanlar birbirleriyle interface’ler aracılığıyla, yani Polymorphism ile, bağlantı kurarlar.
+
+Uygulamalarımızı bu şekilde katmanlara ayırmamız uygulama içindeki bağımlılıkları azaltır ve bize avantaj sağlar. (SOLID yazılımın Single Responsibility prensibi). Örneğin Business katmanı ile Data Access katmanını beraber yazdığımız bir durumda, Data Access için Hibernate kullandığımızı varsayalım. Sonrasında Hibernate dışında farklı bir teknolojiye geçmek istediğimizde bu iki katman iç içe olduğu için tüm kodları yeniden yazmamız gerekebilir. Ancak kodlarımızı katmanlara ayırırsak, bu durumda sadece gerekli katmanın (Data Access) kodlarını değiştirmemiz gerekir ve bu da bize avantaj sağlar. 
+
+Katmanlı mimariler hakkında bilgi edindikten sonra Spring Boot Projemizin yönetimsel ayarlamalarını yapmak için gerekli olan application.properties dosyası hakkında bilgi edinmeye başladım. application.properties dosyası, projemizin tüm bağımlılıklarının, değiştirilebilir property’lerine değer atamamıza ve sonrasında da gerektiğinde kolaylıkla değiştirebilmemize olanak sağlar. Örneğin kullanacağımız veri tabanının bağlantı metnini, kullanıcı adı, şifre gibi değerlerini bu dosyada saklayıp kullanabiliriz. application.properties dosyası, varsayılan olarak projemizde src/main/resources yolunda bulunmaktadır.
+
+Veri tabanı bağlantı metni için spring.datasource.url, kullanıcı adı için spring.datasource.username, şifresi için spring.datasource.password parametreleri kullanılır.
+
+application.properties dosyası hakkında bilgi sahibi olduktan sonra JPA hakkında bilgi edinmeye başladım.
+
+JPA (Java Persistence API), Java programlama dilinde Java sınıfları ile ilişkisel veri tabanı tablolarını ilişkilendirmek için ortaya çıkmış bir standarttır. Burada amaç sınıf değişkenleri ile tablonun kolonlarını eşleştirmek ve SQL yazmadan nesneler üzerinden doğrudan veri tabanı işlemlerini yapmaktır. Bu noktada JPA sadece bir standart ortaya koyar ve veri üzerinde kendisi bir işlem yapmaz. Bunun için bu standartları implemente eden ayrı bir araca ihtiyaç vardır, JPA implementasyonu yapan başlıca araçlar olarak Hibernate, TopLink, EclipseLink ve OpenJPA sayılabilir.
+
+JPA spesifikasyonunda obje-tablo ilişkisini yönetmek için iki tane araç bulunur; anotasyonlar ve XML konfigürasyon dosyaları. Bu iki araçtan birini kullanarak JPA için gerekli olan meta bilgisini oluşturabiliriz.
+
+Hibernate kullanırken, SessionFactory ve Session nesnelerinin yönetimini JPA sayesinde daha kolay bir şekilde yapabiliyoruz. Bunun için EntityManager nesnesi oluşturup unwrap() metodu ile Session nesnesi oluşturuyoruz. Burada, unwrap() metoduna Session.class ifadesini yazıp, Hibernate için olan sınıfı seçiyoruz. Hibernate kullanırken oluşturduğumuz Session nesnesi ile session açıp kapatma işlemini de JPA bizim için hallediyor. Böylece JPA sayesinde daha az kod yazarak Hibernate’i kullanabiliyoruz. Bunun için bu işlemin gerçekleşeceği metoda @Transactional anotasyonu eklememiz gerekiyor. 
+
+Ek olarak, Spring’in JPA için gerekli bağlantıları kurabilmesi için (Hibernate vb.) bu metotlarda @Autowired anotasyonunu kullanmamız gerekiyor.
+
+Böylece staj projemi yapabilmek için hazır hale geldim. Katmanlı mimariye sahip örnek bir proje yazdım ve günü tamamladım.
+
+## 📔 Java 20. Gün
+### Staj projesi – MySQL’de proje için veri tabanı oluşturma, Java’da veri tabanı nesnesi için sınıf oluşturma
+Stajımın son haftasında staj projeme başladım. Projem bir blog sitesinin back-end tarafında veri tabanı bağlantısını kurma, veri ekleme/silme/güncelleme/görüntüleme işlemleri üzerine. Kullanıcıların kullanıcı adı, şifre ve blog yazılarını da ayrı değerler olarak veri tabanında saklamam istendi. Ayrıca, katmanlı mimariye sahip olması istendi.
+
+Öncelikle MySQL üzerinden projem için veri tabanı oluşturarak başladım. ID, Username, Password ve BlogPost sütünlarına sahip bir veri tabanı tablosu oluşturdum. Username değerini unique(eşsiz) olarak tanımladım. Username ve Password değerlerini de not null (boş bırakılamaz) olarak tanımladım.
+
+Ardından projem için Web, JPA, Dev Tools ve MySQL Connector dependency’lerine (bağımlılık) sahip bir Spring Boot projesi oluşturdum.
+
+Sonrasında veri tabanı nesnesi olarak kullanılacak User sınıfını yazdım.
+```java
+package com.kafein.project.Entities;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name="user")
+public class User {
+
+    @Id
+    @Column(name="ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userID;
+
+    @Column(name="Username")
+    private String username;
+
+    @Column(name="Password")
+    private String password;
+
+    @Column(name="BlogPost")
+    private String blogPost;
+
+    public User(int userID, String username, String password, String blogPost) {
+        this.userID = userID;
+        this.username = username;
+        this.password = password;
+        this.blogPost = blogPost;
+    }
+
+    public User(){
+
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getBlogPost() {
+        return blogPost;
+    }
+
+    public void setBlogPost(String blogPost) {
+        this.blogPost = blogPost;
+    }
+}
+```
+
+## 📔 Java 21. Gün
+### Staj projesi – Projenin Data Access katmanının yazılması, application.properties dosyasının konfigürasyonu
+Staj projem üzerine çalışmaya devam ettim. Data Access katmanı için IUserDal interface’ini yazdım. Ardından bu interface’i implement eden HibernateUserDal sınıfını yazdım.
+```java
+package com.kafein.project.DataAccess;
+
+import com.kafein.project.Entities.User;
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import java.util.List;
+
+@Repository
+public class HibernateUserDal implements IUserDal{
+
+    private EntityManager entityManager;
+
+    @Autowired
+    public HibernateUserDal(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    @Transactional
+    public List<User> getAll() {
+        Session session = entityManager.unwrap(Session.class);
+        List<User> users = session.createQuery("from User", User.class).getResultList();
+        return users;
+    }
+
+    @Override
+    @Transactional
+    public void add(User user) {
+        Session session = entityManager.unwrap(Session.class);
+        session.saveOrUpdate(user);
+    }
+
+    @Override
+    @Transactional
+    public void update(User user) {
+        Session session = entityManager.unwrap(Session.class);
+        session.saveOrUpdate(user);
+    }
+
+    @Override
+    @Transactional
+    public void delete(User user) {
+        Session session = entityManager.unwrap(Session.class);
+        User userToDelete = session.get(User.class, user.getUserID());
+        session.delete(userToDelete);
+    }
+
+    @Override
+    @Transactional
+    public User getById(int id) {
+        Session session = entityManager.unwrap(Session.class);
+        User user = session.get(User.class, id);
+        return user;
+    }
+}
+```
+Böylece Data Access katmanını tamamlamış oldum. JPA ile Hibernate’i daha pratik bir şekilde yazabildim.
+
+Ardından veri tabanı bağlantısı için application.properties dosyasının konfigürasyonunu yaptım.
+
+## 📔 Java 22. Gün
+### Staj Projesi – Projenin Service katmanı ve REST Api’ının yazılması
+Projemin Service katmanı için IUserService interface’ini yazdım ve ardından bu interface’i implement eden UserManager sınıfını yazdım. Katmanlar arasındaki bağlantıyı interface’ler aracılığıyla sağladım; UserManager sınıfı için IUserDal tipinde userDal niteliği oluşturdum.
+```java
+package com.kafein.project.Service;
+
+import com.kafein.project.Entities.User;
+import com.kafein.project.DataAccess.IUserDal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Service
+public class UserManager implements IUserService{
+
+    private IUserDal userDal;
+
+    @Autowired
+    public UserManager(IUserDal userDal) {
+        this.userDal = userDal;
+    }
+
+    @Override
+    @Transactional
+    public List<User> getAll() {
+        return this.userDal.getAll();
+    }
+
+    @Override
+    @Transactional
+    public void add(User user) {
+        this.userDal.add(user);
+    }
+
+    @Override
+    @Transactional
+    public void update(User user) {
+        this.userDal.update(user);
+    }
+
+    @Override
+    @Transactional
+    public void delete(User user) {
+        this.userDal.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public User getById(int id) {
+        return this.userDal.getById(id);
+    }
+}
+```
+Ardından projem için bir REST Api yazdım.
+```java
+package com.kafein.project.RestApi;
+
+import com.kafein.project.Entities.User;
+import com.kafein.project.Service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class UserController {
+
+    private IUserService userService;
+
+    @Autowired
+    public UserController(IUserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/users")
+    public List<User> get(){
+        return this.userService.getAll();
+    }
+
+    @PostMapping("/add")
+    public void add(@RequestBody User user){
+        this.userService.add(user);
+    }
+
+    @PostMapping("/update")
+    public void update(@RequestBody User user){
+        this.userService.update(user);
+    }
+
+    @PostMapping("/delete")
+    public void delete(@RequestBody User user){
+        this.userService.delete(user);
+    }
+
+    @GetMapping("/users/{id}")
+    public User getById(@PathVariable int id){
+        return this.userService.getById(id);
+    }
+
+    @RequestMapping("/users/{id}/blog")
+    @ResponseBody
+    public String readPost(@PathVariable int id) {
+        User user = this.userService.getById(id);
+        return String.format(user.getUsername() + "'s Blog: " + user.getBlogPost());
     }
 }
 ```
