@@ -1508,3 +1508,4 @@ public class UserController {
     }
 }
 ```
+Böylece staj projemin yazılım kısmını tamamlamış oldum.
